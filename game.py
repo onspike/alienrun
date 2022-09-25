@@ -27,9 +27,9 @@ while True:
     screen.blit(snail_surface, (snail_x_pos, 265))
     pygame.display.update()
 
-    snail_x_pos = snail_x_pos - 4
+    snail_x_pos = snail_x_pos - 10
 
-    if snail_x_pos == -72:
+    if snail_x_pos < -72: 
         snail_x_pos = 800
 
     clock.tick(60)
