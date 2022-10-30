@@ -1,3 +1,4 @@
+from curses import KEY_BACKSPACE
 import resource
 from turtle import title
 import pygame
@@ -24,27 +25,40 @@ snail_rect = snail_surface.get_rect(bottomleft = (800, 300))
 title_surface = test_font.render('Run and Jump Simulator', False, 'Black' )
 title_rect = title_surface.get_rect(midtop = display_rect.midtop)
 
-score_surface = test_font.render('SCORE: ', False, 'Black' )
+score_surface = test_font.render('SCORE: ', False, (80,200,40))
 score_rect = score_surface.get_rect(center = display_rect.center)
 
 
 while True:
     for event in pygame.event.get():
+
         if event.type == pygame.QUIT:
             pygame.quit()
             exit()
-        if event.type == pygame.MOUSEMOTION:
-            mouse_pos = event.pos
+        # if event.type == pygame.MOUSEMOTION:
+        #     mouse_pos = event.pos
+
+        if event.type == pygame.KEYDOWN:
+           if event.key == pygame.K_SPACE:
+            print('jump')
+
+        if event.type == pygame.KEYUP:
+            print('u')
+
     screen.blit(sky_surface, (0,0))        
     screen.blit(ground_surface, (0,300))
     screen.blit(title_surface, title_rect)
-    screen.blit(score_surface, score_rect)
     screen.blit(snail_surface, snail_rect)
     screen.blit(player_surface, player_rect)
-   
-    #pygame.draw.line(screen, 'Pink', display_rect.topleft, display_rect.bottomright, 10)
-    pygame.draw.line(screen, 'Gold', snail_rect.topleft, pygame.mouse.get_pos(),10)
+    pygame.draw.rect(screen, (90,5,100), score_rect)
+    pygame.draw.rect(screen, (89,50,10), score_rect, 10)
+    screen.blit(score_surface, score_rect)
+    
+    
 
+
+    #keys = pygame.key.get_pressed()
+    #if keys[pygame.K_SPACE]:
 
     # if player_rect.colliderect(snail_rect):
     #    print("collisson")
