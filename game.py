@@ -1,4 +1,4 @@
-from curses import KEY_BACKSPACE
+from curses import KEY_A1, KEY_BACKSPACE
 import resource
 from time import sleep
 from turtle import title
@@ -28,10 +28,13 @@ snail_rect = snail_surface.get_rect(bottomleft = (800, 300))
 title_surface = test_font.render('Run and Jump Simulator', False, 'Black' )
 title_rect = title_surface.get_rect(midtop = display_rect.midtop)
 
-#score_surface = test_font.render('SCORE: ', False, (80,200,40))
-#score_rect = score_surface.get_rect(center = display_rect.center)
+reset_surface = test_font.render('RESET PRESS R', False, (90, 20, 55))
+reset_rect = reset_surface.get_rect(bottom = display_rect.bottom) 
 
-game_over_surface = test_font.render('Game Over: ', False, (80,100,40))
+score_surface = test_font.render('SCORE: ', False, (80,200,40))
+score_rect = score_surface.get_rect(center = display_rect.center)
+
+game_over_surface = test_font.render('Game Over', False, (80,100,40))
 game_over_rect = game_over_surface.get_rect(center = display_rect.center)
 
 while True:
@@ -45,7 +48,9 @@ while True:
 
         if event.type == pygame.KEYDOWN:
            if event.key == pygame.K_SPACE: # and player_rect.bottom == ground_rect.top
-            player_gravity -= 12
+            player_gravity -= 10 
+           if event.key == pygame.K_r:
+            game_active = True
 
         if event.type == pygame.KEYUP:
             print("key up")
@@ -59,9 +64,9 @@ while True:
         screen.blit(snail_surface, snail_rect)
         screen.blit(player_surface, player_rect)
 
-        # pygame.draw.rect(screen, (90,5,100), score_rect)
-        # pygame.draw.rect(screen, (89,50,10), score_rect, 10)
-        # screen.blit(score_surface, score_rect)
+        pygame.draw.rect(screen, (90,5,100), score_rect)
+        pygame.draw.rect(screen, (89,50,10), score_rect, 10)
+        screen.blit(score_surface, score_rect)
 
         mouse_pos = pygame.mouse.get_pos()
 
@@ -76,18 +81,20 @@ while True:
             player_gravity = 0
 
         if player_rect.top < 110:
-            player_gravity += 4
+            player_gravity += 1
 
         if snail_rect.right < 0: 
             snail_rect.left = 800
         
         if snail_rect.colliderect(player_rect):
             game_active = False
-    else:           
+    else:          
         screen.fill('Gray')
         pygame.draw.rect(screen, (90,5,100), game_over_rect)
         pygame.draw.rect(screen, (89,50,10), game_over_rect, 10)
         screen.blit(game_over_surface, game_over_rect)
-        
+        screen.blit(reset_surface, reset_rect)
+        snail_rect.left = 800
+
     pygame.display.update()
     clock.tick(60)
