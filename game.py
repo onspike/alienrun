@@ -31,8 +31,8 @@ title_rect = title_surface.get_rect(midtop = display_rect.midtop)
 reset_surface = test_font.render('RESET PRESS R', False, (90, 20, 55))
 reset_rect = reset_surface.get_rect(bottom = display_rect.bottom) 
 
-score_surface = test_font.render('SCORE: ', False, (80,200,40))
-score_rect = score_surface.get_rect(center = display_rect.center)
+score = 0
+scored = False
 
 game_over_surface = test_font.render('Game Over', False, (80,100,40))
 game_over_rect = game_over_surface.get_rect(center = display_rect.center)
@@ -50,10 +50,12 @@ while True:
            if event.key == pygame.K_SPACE: # and player_rect.bottom == ground_rect.top
             player_gravity -= 10 
            if event.key == pygame.K_r:
+            if not game_active:
+                score = 0
             game_active = True
 
         if event.type == pygame.KEYUP:
-            print("key up")
+            # print("key up")
             player_gravity += 17
 
     if game_active:
@@ -64,21 +66,41 @@ while True:
         screen.blit(snail_surface, snail_rect)
         screen.blit(player_surface, player_rect)
 
+        score_surface = test_font.render('SCORE: ' + str(score), False, (80,200,40))
+        score_rect = score_surface.get_rect(topleft = display_rect.topleft)
+
         pygame.draw.rect(screen, (90,5,100), score_rect)
         pygame.draw.rect(screen, (89,50,10), score_rect, 10)
         screen.blit(score_surface, score_rect)
 
         mouse_pos = pygame.mouse.get_pos()
 
-        if player_rect.collidepoint(mouse_pos):
-            print("ouch! you hovered over me!")
+        # if player_rect.collidepoint(mouse_pos):
+        #     print("ouch! you hovered over me!")
         #player_rect.left += 1
+
         snail_rect.left = snail_rect.left - 5
         player_rect.top += player_gravity
+
+        if snail_rect.colliderect(player_rect):
+            print("snail x:" + str(snail_rect.x))
+            print("player x:" + str(player_rect.x))
+            game_active = False
+            scored = False
+        else:
+            player_length, y = player_rect.size
+
+            if scored == False and abs(snail_rect.x - player_rect.x) < player_length:
+                print("give a point..")
+                scored = True
+
 
         if player_rect.colliderect(ground_rect):
             player_rect.bottom = ground_rect.top
             player_gravity = 0
+            if scored:
+                score = score + 1
+                scored = False
 
         if player_rect.top < 110:
             player_gravity += 1
@@ -86,12 +108,16 @@ while True:
         if snail_rect.right < 0: 
             snail_rect.left = 800
         
-        if snail_rect.colliderect(player_rect):
-            game_active = False
     else:          
         screen.fill('Gray')
         pygame.draw.rect(screen, (90,5,100), game_over_rect)
         pygame.draw.rect(screen, (89,50,10), game_over_rect, 10)
+
+        score_surface = test_font.render('FINAL SCORE: ' + str(score), False, (80,200,40))
+        score_rect = score_surface.get_rect(topleft = display_rect.topleft)
+
+        screen.blit(score_surface, score_rect)
+
         screen.blit(game_over_surface, game_over_rect)
         screen.blit(reset_surface, reset_rect)
         snail_rect.left = 800
