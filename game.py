@@ -4,12 +4,17 @@ from time import sleep
 from turtle import title
 import pygame
 from sys import exit
-
+def display_score():
+    current_time = pygame.time.get_ticks() - start_time
+    score2_surface = test_font.render(f'{round(current_time / 1000)}', False,(64,64,64))
+    score2_rect = score2_surface.get_rect(topright = display_rect.topright)
+    screen.blit(score2_surface,score2_rect)
 pygame.init()
 screen = pygame.display.set_mode((800,400))
 pygame.display.set_caption('Run and Jump Simulator')
 clock = pygame.time.Clock()
 game_active = True
+start_time = 0
 display_rect = screen.get_rect(topleft = (0,0))
 
 test_font = pygame.font.Font('resources/font/Pixeltype.ttf', 50)
@@ -51,6 +56,7 @@ while True:
             player_gravity -= 10 
            if event.key == pygame.K_r:
             if not game_active:
+                start_time = pygame.time.get_ticks()
                 score = 0
             game_active = True
 
@@ -72,7 +78,7 @@ while True:
         pygame.draw.rect(screen, (90,5,100), score_rect)
         pygame.draw.rect(screen, (89,50,10), score_rect, 10)
         screen.blit(score_surface, score_rect)
-
+        display_score()
         mouse_pos = pygame.mouse.get_pos()
 
         # if player_rect.collidepoint(mouse_pos):
@@ -88,12 +94,11 @@ while True:
             game_active = False
             scored = False
         else:
-            player_length, y = player_rect.size
+            player_length, _ = player_rect.size
 
             if scored == False and abs(snail_rect.x - player_rect.x) < player_length:
                 print("give a point..")
                 scored = True
-
 
         if player_rect.colliderect(ground_rect):
             player_rect.bottom = ground_rect.top
