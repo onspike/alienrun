@@ -4,16 +4,19 @@ from time import sleep
 from turtle import title
 import pygame
 from sys import exit
+
 def display_score():
     current_time = pygame.time.get_ticks() - start_time
     score2_surface = test_font.render(f'{round(current_time / 1000)}', False,(64,64,64))
     score2_rect = score2_surface.get_rect(topright = display_rect.topright)
     screen.blit(score2_surface,score2_rect)
+    return current_time
+
 pygame.init()
 screen = pygame.display.set_mode((800,400))
 pygame.display.set_caption('Run and Jump Simulator')
 clock = pygame.time.Clock()
-game_active = True
+game_active = False
 start_time = 0
 display_rect = screen.get_rect(topleft = (0,0))
 
@@ -27,10 +30,15 @@ player_surface = pygame.image.load('resources/graphics/Player/player_walk_1.png'
 player_rect = player_surface.get_rect(bottomleft = (80, 300))
 player_gravity = 0
 
+player_stand = pygame.image.load('resources/graphics/Player/player_stand.png').convert_alpha()
+player_stand = pygame.transform.rotozoom(player_stand, 0, 2)
+player_stand_rect = player_stand.get_rect(center = (400,200))
+
 snail_surface = pygame.image.load('resources/graphics/snail/snail1.png').convert_alpha()
 snail_rect = snail_surface.get_rect(bottomleft = (800, 300))
 
-title_surface = test_font.render('Run and Jump Simulator', False, 'Black' )
+title_surface = test_font.render('Run and Jump Simulator', False, 'Black' ).convert_alpha()
+title_surface = pygame.transform.smoothscale(title_surface, (300, 30))
 title_rect = title_surface.get_rect(midtop = display_rect.midtop)
 
 reset_surface = test_font.render('RESET PRESS R', False, (90, 20, 55))
@@ -68,7 +76,6 @@ while True:
 
         screen.blit(sky_surface, (0,0))        
         screen.blit(ground_surface, (0,300))
-        screen.blit(title_surface, title_rect)
         screen.blit(snail_surface, snail_rect)
         screen.blit(player_surface, player_rect)
 
@@ -78,7 +85,9 @@ while True:
         pygame.draw.rect(screen, (90,5,100), score_rect)
         pygame.draw.rect(screen, (89,50,10), score_rect, 10)
         screen.blit(score_surface, score_rect)
+        
         display_score()
+        
         mouse_pos = pygame.mouse.get_pos()
 
         # if player_rect.collidepoint(mouse_pos):
@@ -114,17 +123,22 @@ while True:
             snail_rect.left = 800
         
     else:          
-        screen.fill('Gray')
-        pygame.draw.rect(screen, (90,5,100), game_over_rect)
-        pygame.draw.rect(screen, (89,50,10), game_over_rect, 10)
+        screen.fill((94, 129, 152))
+        # pygame.draw.rect(screen, (90,5,100), game_over_rect)
+        # pygame.draw.rect(screen, (89,50,10), game_over_rect, 10)
 
         score_surface = test_font.render('FINAL SCORE: ' + str(score), False, (80,200,40))
         score_rect = score_surface.get_rect(topleft = display_rect.topleft)
-
-        screen.blit(score_surface, score_rect)
-
-        screen.blit(game_over_surface, game_over_rect)
+       
+       
+        if score > 0:
+            screen.blit(score_surface, score_rect)
+    
         screen.blit(reset_surface, reset_rect)
+        
+        screen.blit(title_surface, title_rect)
+        screen.blit(player_stand, player_stand_rect)
+        # screen.blit(game_over_surface, game_over_rect)
         snail_rect.left = 800
 
     pygame.display.update()
