@@ -50,6 +50,9 @@ scored = False
 game_over_surface = test_font.render('Game Over', False, (80,100,40))
 game_over_rect = game_over_surface.get_rect(center = display_rect.center)
 
+obstacle_timer = pygame.USEREVENT + 1
+pygame.time.set_timer(obstacle_timer, 900)
+
 while True:
     for event in pygame.event.get():
 
@@ -72,6 +75,8 @@ while True:
             # print("key up")
             player_gravity += 17
 
+        if event.type == obstacle_timer:
+            print ("SIUU!! Goal made by Phineas/MESSI :)")
     if game_active:
 
         screen.blit(sky_surface, (0,0))        
@@ -142,4 +147,4 @@ while True:
         snail_rect.left = 800
 
     pygame.display.update()
-    clock.tick(60)
+    clock.tick(1)
