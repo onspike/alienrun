@@ -1,9 +1,7 @@
 from curses import KEY_A1, KEY_BACKSPACE
-import resource
-from time import sleep
-from turtle import title
 import pygame
 from sys import exit
+from random import randint
 
 def display_score():
     current_time = pygame.time.get_ticks() - start_time
@@ -11,6 +9,15 @@ def display_score():
     score2_rect = score2_surface.get_rect(topright = display_rect.topright)
     screen.blit(score2_surface,score2_rect)
     return current_time
+
+def obstacle_movement(obstacle_list):
+    if obstacle_list:
+        for obsacle_rect in obstacle_list:
+            obsacle_rect.x -= 5
+
+            screen.blit(fly_surface, obsacle_rect)
+
+    return obstacle_list
 
 pygame.init()
 screen = pygame.display.set_mode((800,400))
@@ -34,8 +41,13 @@ player_stand = pygame.image.load('resources/graphics/Player/player_stand.png').c
 player_stand = pygame.transform.rotozoom(player_stand, 0, 2)
 player_stand_rect = player_stand.get_rect(center = (400,200))
 
+obstacle_rect_list = []
+
 snail_surface = pygame.image.load('resources/graphics/snail/snail1.png').convert_alpha()
 snail_rect = snail_surface.get_rect(bottomleft = (800, 300))
+
+fly_surface = pygame.image.load('resources/graphics/Fly/Fly1.png').convert_alpha()
+# fly_rect = snail_surface.get_rect(bottomleft = (800, 300))
 
 title_surface = test_font.render('Run and Jump Simulator', False, 'Black' ).convert_alpha()
 title_surface = pygame.transform.smoothscale(title_surface, (300, 30))
@@ -50,8 +62,8 @@ scored = False
 game_over_surface = test_font.render('Game Over', False, (80,100,40))
 game_over_rect = game_over_surface.get_rect(center = display_rect.center)
 
-obstacle_timer = pygame.USEREVENT + 1
-pygame.time.set_timer(obstacle_timer, 900)
+add_obstacle_event = pygame.USEREVENT + 1
+pygame.time.set_timer(add_obstacle_event, 300)
 
 while True:
     for event in pygame.event.get():
@@ -75,10 +87,12 @@ while True:
             # print("key up")
             player_gravity += 17
 
-        if event.type == obstacle_timer:
-            print ("SIUU!! Goal made by Phineas/MESSI :)")
-    if game_active:
+        if event.type == add_obstacle_event and game_active:
+            obstacle_rect_list.append(fly_surface.get_rect(bottomleft = (randint(900, 1100), 100)))
 
+
+    if game_active:
+        
         screen.blit(sky_surface, (0,0))        
         screen.blit(ground_surface, (0,300))
         screen.blit(snail_surface, snail_rect)
@@ -91,6 +105,8 @@ while True:
         pygame.draw.rect(screen, (89,50,10), score_rect, 10)
         screen.blit(score_surface, score_rect)
         
+        obstacle_rect_list = obstacle_movement(obstacle_rect_list)
+
         display_score()
         
         mouse_pos = pygame.mouse.get_pos()
@@ -147,4 +163,4 @@ while True:
         snail_rect.left = 800
 
     pygame.display.update()
-    clock.tick(1)
+    clock.tick(60)
