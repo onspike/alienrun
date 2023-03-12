@@ -7,17 +7,24 @@ def display_score():
     current_time = pygame.time.get_ticks() - start_time
     score2_surface = test_font.render(f'{round(current_time / 1000)}', False,(64,64,64))
     score2_rect = score2_surface.get_rect(topright = display_rect.topright)
-    screen.blit(score2_surface,score2_rect)
+    screen.blit(score2_surface, score2_rect)
     return current_time
 
 def obstacle_movement(obstacle_list):
     if obstacle_list:
-        for obsacle_rect in obstacle_list:
-            obsacle_rect.x -= 5
+        for obstacle_rect in obstacle_list:
+            obstacle_rect.x -= 5
 
-            screen.blit(fly_surface, obsacle_rect)
+            if obstacle_rect.bottom == 300:
+                screen.blit(snail_surface, obstacle_rect)
+            else:
+                screen.blit(fly_surface, obstacle_rect)    
 
-    return obstacle_list
+        obstacle_list = [obstacle for obstacle in obstacle_list if obstacle.x > - snail_surface.get_width()]
+
+        return obstacle_list
+
+    else: return []
 
 pygame.init()
 screen = pygame.display.set_mode((800,400))
@@ -47,7 +54,6 @@ snail_surface = pygame.image.load('resources/graphics/snail/snail1.png').convert
 snail_rect = snail_surface.get_rect(bottomleft = (800, 300))
 
 fly_surface = pygame.image.load('resources/graphics/Fly/Fly1.png').convert_alpha()
-# fly_rect = snail_surface.get_rect(bottomleft = (800, 300))
 
 title_surface = test_font.render('Run and Jump Simulator', False, 'Black' ).convert_alpha()
 title_surface = pygame.transform.smoothscale(title_surface, (300, 30))
@@ -63,7 +69,7 @@ game_over_surface = test_font.render('Game Over', False, (80,100,40))
 game_over_rect = game_over_surface.get_rect(center = display_rect.center)
 
 add_obstacle_event = pygame.USEREVENT + 1
-pygame.time.set_timer(add_obstacle_event, 300)
+pygame.time.set_timer(add_obstacle_event, 1500)
 
 while True:
     for event in pygame.event.get():
@@ -88,14 +94,16 @@ while True:
             player_gravity += 17
 
         if event.type == add_obstacle_event and game_active:
-            obstacle_rect_list.append(fly_surface.get_rect(bottomleft = (randint(900, 1100), 100)))
-
+            if randint(0,2) == 0:
+                obstacle_rect_list.append(snail_surface.get_rect(bottomleft = (randint(900, 1100), 300)))
+            else:
+                obstacle_rect_list.append(fly_surface.get_rect(bottomleft = (randint(900, 1100), 160)))
 
     if game_active:
         
         screen.blit(sky_surface, (0,0))        
         screen.blit(ground_surface, (0,300))
-        screen.blit(snail_surface, snail_rect)
+        # screen.blit(snail_surface, snail_rect)
         screen.blit(player_surface, player_rect)
 
         score_surface = test_font.render('SCORE: ' + str(score), False, (80,200,40))
@@ -115,7 +123,7 @@ while True:
         #     print("ouch! you hovered over me!")
         #player_rect.left += 1
 
-        snail_rect.left = snail_rect.left - 5
+        # snail_rect.left = snail_rect.left - 5
         player_rect.top += player_gravity
 
         if snail_rect.colliderect(player_rect):
