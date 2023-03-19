@@ -25,6 +25,16 @@ def obstacle_movement(obstacle_list):
         return obstacle_list
 
     else: return []
+    
+def collisions(player, obstacles):
+    if obstacles:
+
+        for obstacle in obstacles:
+            if player.colliderect(obstacle):
+                return False 
+
+    return True
+        
 
 pygame.init()
 screen = pygame.display.set_mode((800,400))
@@ -87,6 +97,7 @@ while True:
             if not game_active:
                 start_time = pygame.time.get_ticks()
                 score = 0
+                obstacle_rect_list = []
             game_active = True
 
         if event.type == pygame.KEYUP:
@@ -114,6 +125,8 @@ while True:
         screen.blit(score_surface, score_rect)
         
         obstacle_rect_list = obstacle_movement(obstacle_rect_list)
+
+        game_active = collisions(player_rect, obstacle_rect_list)
 
         display_score()
         
