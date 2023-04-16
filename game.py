@@ -34,7 +34,20 @@ def collisions(player, obstacles):
                 return False 
 
     return True
-        
+
+def animate_player():
+    global player_walk, player_index
+
+    player_index += 0.1
+    if player_index <= len(player_walk):
+        player_index = 0
+                
+    if player_rect.bottom < 300:
+        return player_jump    
+    else:
+        return player_walk[int(player_index)]  
+
+    
 
 pygame.init()
 screen = pygame.display.set_mode((800,400))
@@ -50,9 +63,15 @@ sky_surface = pygame.image.load('resources/graphics/Sky.png').convert()
 ground_surface = pygame.image.load('resources/graphics/ground.png').convert()
 ground_rect = ground_surface.get_rect(bottomleft = (0,470))
 
-player_surface = pygame.image.load('resources/graphics/Player/player_walk_1.png').convert_alpha()
-player_rect = player_surface.get_rect(bottomleft = (80, 300))
 player_gravity = 0
+floor = 300
+
+player_walk_1 = pygame.image.load('resources/graphics/Player/player_walk_1.png').convert_alpha()
+player_walk_2 = pygame.image.load('resources/graphics/Player/player_walk_2.png').convert_alpha()
+player_jump = pygame.image.load('resources/graphics/Player/jump.png').convert_alpha()
+player_walk = [player_walk_1, player_walk_2]
+player_index = 0
+player_rect = player_walk_1.get_rect(midbottom = (80, floor))
 
 player_stand = pygame.image.load('resources/graphics/Player/player_stand.png').convert_alpha()
 player_stand = pygame.transform.rotozoom(player_stand, 0, 2)
@@ -115,7 +134,9 @@ while True:
         screen.blit(sky_surface, (0,0))        
         screen.blit(ground_surface, (0,300))
         # screen.blit(snail_surface, snail_rect)
-        screen.blit(player_surface, player_rect)
+        
+        screen.blit(animate_player(),
+                    player_rect)
 
         score_surface = test_font.render('SCORE: ' + str(score), False, (80,200,40))
         score_rect = score_surface.get_rect(topleft = display_rect.topleft)
